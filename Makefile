@@ -11,11 +11,16 @@ uefi:
 .PHONY: sdcard
 sdcard: uefi
 	rm -f sdcard.img
-	fallocate -l 33M sdcard.img
-	parted -s sdcard.img mklabel gpt
-	parted -s sdcard.img unit s mkpart loader 64 8MiB
-	parted -s sdcard.img unit s mkpart uboot 8MiB 16MiB
-	parted -s sdcard.img unit s mkpart env 16MiB 32MiB
+#	fallocate -l 33M sdcard.img
+	dd if=/dev/zero of=sdcard.img bs=1m count=33
+#	parted -s sdcard.img mklabel gpt
+#	parted -s sdcard.img unit s mkpart loader 64 8MiB
+#	parted -s sdcard.img unit s mkpart uboot 8MiB 16MiB
+#	parted -s sdcard.img unit s mkpart env 16MiB 32MiB
+	gpt create sdcard.img
+	gpt add -t linux-data -l loader -b 64 -s 16320 sdcard.img
+	gpt add -t linux-data -l uboot -b 16384 -s 16384 sdcard.img
+	gpt add -t linux-data -l env -b 32768 -s 32768 sdcard.img
 
 	for board in $(BOARDS); do							\
 		cp sdcard.img $${board}_EFI.img;				\

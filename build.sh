@@ -11,7 +11,8 @@ shift
 
 export WORKSPACE="$PWD"
 export PACKAGES_PATH=$PWD/edk2:$PWD/edk2-platforms:$PWD/edk2-non-osi:$PWD/edk2-rockchip
-export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
+#export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
+export GCC5_AARCH64_PREFIX=aarch64--netbsd-
 
 TRUST_INI=RK3568TRUST.ini
 MINIALL_INI=RK3568MINIALL.ini
@@ -26,14 +27,14 @@ fetch_deps() {
 build_uefitools() {
 	[ -r .uefitools_done ] && return
 	echo " => Building UEFI tools"
-	make -C edk2/BaseTools -j$(getconf _NPROCESSORS_ONLN) && touch .uefitools_done
+	make -C edk2/BaseTools -j$(getconf NPROCESSORS_ONLN) && touch .uefitools_done
 }
 
 build_uefi() {
 	vendor=$1
 	board=$2
 	echo " => Building UEFI"
-	build -n $(getconf _NPROCESSORS_ONLN) -b ${RKUEFIBUILDTYPE} -a AARCH64 -t GCC5 \
+	build -n $(getconf NPROCESSORS_ONLN) -b ${RKUEFIBUILDTYPE} -a AARCH64 -t GCC5 \
 	    -D FIRMWARE_VER="${FIRMWARE_VER}" \
 	    -p Platform/${vendor}/${board}/${board}.dsc
 }
